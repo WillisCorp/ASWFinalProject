@@ -123,6 +123,6 @@ expressApp.delete('/alumnos/:id', (req, res) =>{
 });
 
 expressApp.listen(PORT, () => 
-    console.log('servidor levantado en el puerto $(PORT)')
+    console.log('servidor levantado en el puerto'+ PORT)
 );
 
