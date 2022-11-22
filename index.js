@@ -2,7 +2,7 @@ import express from 'express';
 import { USERS_BBDD } from './bbdd.js';
 import { MAESTROS_BBDD } from './bbddMaestros.js';
 
-const PORT = 8080;
+const PORT = 80;
 const expressApp = express();
 
 expressApp.use(express.json())
