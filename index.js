@@ -2,7 +2,7 @@ import express from 'express';
 import { USERS_BBDD } from './bbdd.js';
 import { MAESTROS_BBDD } from './bbddMaestros.js';
 
-const PORT = 80;
+const PORT = 8080;
 const expressApp = express();
 
 expressApp.use(express.json())
@@ -26,36 +26,67 @@ expressApp.get('/alumnos', (req, res) =>{
 //agrega los datos de un alumno
 expressApp.post('/alumnos', (req, res) =>{
     const { id, nombres, apellidos, matricula, promedio } = req.body;
-    const base = [1,2,3,4,5,6,7,8,9,0]
-    if(!id || !nombres  || !apellidos || !matricula || !promedio) return res.status(400).send();
     const user = USERS_BBDD.find((user) => user.id == id);
+    if(!id || !nombres  || !apellidos || !matricula || !promedio) { 
+    var datos = [];
+    datos.push({
+        "id":id,
+        "nombres":nombres,
+        "apellidos": apellidos,
+        "matricula": matricula,
+        "promedio": promedio
+    })
+    res.status(400); return res.send(datos);
+    }
     if(user) return res.status(409).send();
-    if(!Number.isInteger(id)) return res.status(409).send();
+    //if(!Number.isInteger(id)) return res.status(409).send();
     //if(nombres.find()) return res.status(409).send();
-    if(!Number.isInteger(promedio)) return res.status(409).send();
+    //if(!Number.isInteger(promedio)) return res.status(409).send();
     USERS_BBDD.push({
         id, nombres, apellidos, matricula, promedio
     })
-    return res.send();
+    const user2 = USERS_BBDD.find((user) => user.id == id);
+    res.status(201);
+    return res.send(user2);
+    return res.status(201).send;
 });
 
 //modifica los datos de un alumno en específico
 expressApp.put('/alumnos/:id', (req, res) =>{
     const { id } = req.params;
     const {nombres, apellidos, matricula, promedio } = req.body;
-    if(!id || !nombres  || !apellidos || !matricula || !promedio) return res.status(400).send();
     const user = USERS_BBDD.find((user) => user.id == id);
+    if(!id || !nombres  || !apellidos || !matricula || !promedio) {res.status(400); return res.send(user);}
     if(!user) return res.status(404).send();
-    //if(comprobar(nombres)) return res.status(409).send();
+    //if(!contienenum(nombres)) return res.status(409).send();
     //if(comprobar(apellidos)) return res.status(409).send();
     //if(comprobar(matricula)) return res.status(409).send();
-    if(!Number.isInteger(promedio)) return res.status(409).send();
+    //if(!Number.isInteger(promedio)) return res.status(409).send();
     user.nombres = nombres;
     user.apellidos = apellidos;
     user.matricula = matricula;
     user.promedio = promedio;
-    return res.send();
+    const user2 = USERS_BBDD.find((user) => user.id == id);
+    return res.send(user2);
 });
+
+// function contienenum(prueba){
+//     const ciclo = prueba.splice();
+//     for(i=0;i<ciclo.length;i++){
+//         if(ciclo[i]==1){return true;}
+//         if(ciclo[i]==2){return true;}
+//         if(ciclo[i]==3){return true;}
+//         if(ciclo[i]==4){return true;}
+//         if(ciclo[i]==5){return true;}
+//         if(ciclo[i]==6){return true;}
+//         if(ciclo[i]==7){return true;}
+//         if(ciclo[i]==8){return true;}
+//         if(ciclo[i]==9){return true;}
+//         if(ciclo[i]==0){return true;}
+//         console.log(ciclo[i]);
+//     }
+//     return false;
+// }
 
 //elimina los datos un alumno en específico
 expressApp.delete('/alumnos/:id', (req, res) =>{
@@ -66,8 +97,13 @@ expressApp.delete('/alumnos/:id', (req, res) =>{
     return res.send();
 });
 
+expressApp.delete('/alumnos', (req, res) =>{
+    res.status(405).send();
+})
+
+
 //Obtiene una lista de los maestros
-expressApp.get("/maestros/:id", (req, res) =>{
+expressApp.get("/profesores/:id", (req, res) =>{
     const { id } = req.params;
     const maestros = MAESTROS_BBDD.find((maestros) => maestros.id == id);
     if(!maestros) return res.status(404).send();
@@ -75,7 +111,7 @@ expressApp.get("/maestros/:id", (req, res) =>{
 });
 
 //obtiene los datos de un maestro en específico
-expressApp.get('/maestros', (req, res) =>{
+expressApp.get('/profesores', (req, res) =>{
     const { id } = req.params;
     const maestros = MAESTROS_BBDD;
     if(!maestros) return res.status(404).send();
@@ -83,38 +119,52 @@ expressApp.get('/maestros', (req, res) =>{
 });
 
 //agrega los datos de un maestro
-expressApp.post('/maestros', (req, res) =>{
-    const { id, numeroempleado, nombres, apellidos, horasClase } = req.body;
-    if(!id || !numeroempleado ||!nombres || !apellidos || !horasClase) return res.status(400).send();
+expressApp.post('/profesores', (req, res) =>{
+    const { id, numeroEmpleado, nombres, apellidos, horasClase } = req.body;
+    if(!id || !numeroEmpleado ||!nombres || !apellidos || !horasClase) {
+        var datos = [];
+        datos.push({
+            "id":id,
+            "numeroEmpleado": numeroEmpleado,
+            "nombres":nombres,
+            "apellidos": apellidos,
+            "horasClase": horasClase,
+        })
+        res.status(400); return res.send(datos);
+    }
     const maestros = MAESTROS_BBDD.find((maestros) => maestros.id == id);
     if(maestros) return res.status(409).send();
-    if(!Number.isInteger(id)) return res.status(409).send();
-    if(!Number.isInteger(numeroempleado)) return res.status(409).send();
+    //if(!Number.isInteger(id)) return res.status(409).send();
+    //if(!Number.isInteger(numeroempleado)) return res.status(409).send();
     //if(comprobar(nombres)) return res.status(409).send();
     //if(comprobar(apellidos)) return res.status(409).send();
-    if(!Number.isInteger(horasClase)) return res.status(409).send();
+    //if(!Number.isInteger(horasClase)) return res.status(409).send();
     MAESTROS_BBDD.push({
-        id, numeroempleado, nombres, apellidos, horasClase
+        id, numeroEmpleado, nombres, apellidos, horasClase
     })
-    return res.send();
+    const maestros2 = MAESTROS_BBDD.find((maestros) => maestros.id == id);
+    res.status(201);
+    return res.send(maestros2);
+    //return res.send();
 });
 
 //modifica los datos de un maestro en específico
-expressApp.put('/maestros/:id', (req, res) =>{
+expressApp.put('/profesores/:id', (req, res) =>{
     const { id } = req.params;
-    const {numeroempleado, nombres, apellidos, horasClase} = req.body;
-    if(!numeroempleado ||!nombres || !apellidos || !horasClase) return res.status(400).send();
+    const {numeroEmpleado, nombres, apellidos, horasClase} = req.body;
     const maestros = MAESTROS_BBDD.find((maestros) => maestros.id == id);
+    if(!numeroEmpleado ||!nombres || !apellidos || !horasClase){ res.status(400); return res.send(maestros);};
     if(!maestros) return res.status(404).send();
-    maestros.numeroempleado = numeroempleado;
+    maestros.numeroEmpleado = numeroEmpleado;
     maestros.nombres = nombres;
     maestros.apellidos = apellidos;
     maestros.horasClase = horasClase;
-    return res.send();
+    const maestros2 = MAESTROS_BBDD.find((maestros) => maestros.id == id);
+    return res.send(maestros2);
 });
 
 //elimina los datos un maestro en específico
-expressApp.delete('/alumnos/:id', (req, res) =>{
+expressApp.delete('/profesores/:id', (req, res) =>{
     const { id } = req.params;
     const maestrosIndex = MAESTROS_BBDD.findIndex((maestros) => maestros.id == id);
     if(maestrosIndex === -1) res.status(404).send();
@@ -122,7 +172,10 @@ expressApp.delete('/alumnos/:id', (req, res) =>{
     return res.send();
 });
 
-expressApp.listen(PORT, () => 
-    console.log('servidor levantado en el puerto'+ PORT)
-);
+expressApp.delete('/profesores', (req, res) =>{
+    res.status(405).send();
+})
 
+expressApp.listen(PORT, () => 
+    console.log('servidor levantado en el puerto '+PORT)
+);
